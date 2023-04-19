@@ -1,16 +1,16 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from .models import Film,Review
 
 
 
-class UserModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model=User
-        fields=['username','password','email']
-    def create(self,validated_data):
-        print(validated_data)
-        return User.objects.create_user(**validated_data)
+# class UserModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model=User
+#         fields=['username','password','email']
+#     def create(self,validated_data):
+#         print(validated_data)
+#         return User.objects.create_user(**validated_data)
     
 
 class FilmModelSer(serializers.ModelSerializer):
@@ -21,13 +21,14 @@ class FilmModelSer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    film=FilmModelSer(many=False,read_only=True)
     class Meta:
         model=Review
-        fields=['review','rating','date']
+        fields=['review','rating','date','film']
     def create(self,validated_data):
-        user=self.context.get("user")
+        # user=self.context.get("user")
         film=self.context.get("film")
-        return Review.objects.create(user=user,film=film,**validated_data)
+        return Review.objects.create(film=film,**validated_data)
     
     def validate(self,data):
         rtng=data.get("rating")
